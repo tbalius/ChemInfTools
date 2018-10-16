@@ -219,9 +219,10 @@ void main(int argc, char *argv[]) {
       exit(1);
    }
    else {
-      printf("Two argument expected.\n");
+      printf("Three argument expected.\n");
       printf("(1) first fingerprint file.\n");
       printf("(2) first smiles file.\n");
+      printf("(3) Output prefix.\n");
       //printf("(3) second fingerprint file.\n");
       //printf("(4) second smiles file.\n");
       exit(1);

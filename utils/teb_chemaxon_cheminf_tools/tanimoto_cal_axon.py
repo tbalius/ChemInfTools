@@ -11,9 +11,9 @@ import tanimoto_tversky_cal_axon_lib as tccalc
 def main():
   if not (len(sys.argv) == 4 or len(sys.argv) == 5): # if no input
      print "ERORR"
-     print "syntexs: python tanimoto_cal_axon.py -one smiles1 outputprefix"
+     print "syntax: python tanimoto_cal_axon.py -one smiles1 outputprefix"
      print "         this produces a squere symestric matrix of set1 with itself. "
-     print "syntexs: python tanimoto_cal_axon.py -two smiles1 smiles2 outputprefix"
+     print "syntax: python tanimoto_cal_axon.py -two smiles1 smiles2 outputprefix"
      print "         this produces a rectangular non-symestric matrix of set1 to set2"
      return
 

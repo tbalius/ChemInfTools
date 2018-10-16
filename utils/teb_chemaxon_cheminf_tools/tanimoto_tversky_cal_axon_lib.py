@@ -225,6 +225,7 @@ def get_fp(infile,outfile,pid):
   for line in lines:
      splitline = line.split()
      if len(splitline) > 2:
+        print line
         print "ERROR:len(smiles) > 2"
         exit()
      print splitline

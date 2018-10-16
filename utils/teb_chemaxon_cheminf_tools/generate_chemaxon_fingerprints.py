@@ -5,7 +5,7 @@ import tanimoto_tversky_cal_axon_lib as tccalc
 def main():
   if (len(sys.argv) != 3): # if no input
      print "ERORR"
-     print "syntexs: python generate_chemaxon_fingerprints.py smiles1 outputprefix"
+     print "syntax: python generate_chemaxon_fingerprints.py smiles1 outputprefix"
      return
 
   smilesfile1   = sys.argv[1]
@@ -29,7 +29,7 @@ def main():
   # if the fp file already exists, just read in the fingerprints.  
   # otherwise caluclate the fingerprints.
   if (os.path.isfile(outfileF) ):
-     print outfileF + "exists."
+     print outfileF + " exists."
      exit()
   else:
      fpvec1 = tccalc.get_fp(smilesfile1,outfileF,pid)

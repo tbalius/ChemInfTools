@@ -207,18 +207,21 @@ void main(int argc, char *argv[]) {
   int fpbsize = 1024/16; // lenth of bits in binary array when fingerprint is converted to binary. 
   int i,count,count2;
   char prefix[100];
+  bool write_matrix = false;
+  
   //double tc_threshold; 
   //int maxclusters; 
 
-   if( argc == 8 ) {
-      printf("The argument supplied are:\n (1) %s\n (2) %s \n (3) %s \n (4) %s\n (5) %s\n (6) %s\n", argv[1], argv[2], argv[3],argv[4],argv[5],argv[6]);
+   if( argc == 9 ) {
+      printf("The argument supplied are:\n (1) %s\n (2) %s \n (3) %s \n (4) %s\n (5) %s\n (6) %s\n (7) %s\n (8) %s\n", argv[1], argv[2], argv[3],argv[4],argv[5],argv[6],argv[7],argv[8]);
    }
-   else if( argc > 8 ) {
+   else if( argc > 9 ) {
       printf("Too many arguments supplied.\n");
       exit(1);
    }
    else {
-      printf("7 argument expected.\n");
+      printf("8 argument expected.\n");
+      printf("number of elements is %d\n",argc);
       printf("(1) first fingerprint file.\n");
       printf("(2) first smiles file.\n");
       printf("(3) first count file.\n");
@@ -226,6 +229,7 @@ void main(int argc, char *argv[]) {
       printf("(5) second smiles file.\n");
       printf("(6) second count file.\n");
       printf("(7) prefix of the outputfile.\n");
+      printf("(8) boolean weather to write full matrix or not (T or F).\n");
       exit(1);
    }
 
@@ -238,6 +242,18 @@ void main(int argc, char *argv[]) {
   strcpy(filename_smi2, argv[5]);
   strcpy(filename_count2, argv[6]);
   strcpy(prefix, argv[7]);
+  if (strcmp(argv[8], "T") !=0 && strcmp(argv[8], "F") != 0) {
+      printf("(8) must be T or F.\n"); 
+      exit(0);
+  }
+  else{
+      //write_matrix = (strcmp(argv[8], "T")==0);
+      if (strcmp(argv[8], "T") == 0) {
+         write_matrix = true;
+      }
+      printf("write_matrix bool = %d\n",write_matrix);
+  }
+  
   printf("figureprint file1 = %s\n",filename1);
   printf("smiles file1 = %s\n",filename_smi1);
   printf("count file1 = %s\n",filename_count1);
@@ -382,7 +398,7 @@ void main(int argc, char *argv[]) {
   fclose(fpc2);
   
 
-  cal_Tc_matrix(fingerprints_binary1, fingerprints_one_count1, size_smi1, names1, fingerprints_binary2, fingerprints_one_count2, size_smi2, names2, fpbsize, prefix);
+  cal_Tc_matrix(fingerprints_binary1, fingerprints_one_count1, size_smi1, names1, fingerprints_binary2, fingerprints_one_count2, size_smi2, names2, fpbsize, prefix, write_matrix);
    
   // clean up arrays. 
   for (i=0; i<size1; i++){
