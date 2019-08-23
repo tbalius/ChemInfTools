@@ -260,7 +260,7 @@ def import_mat(matfilename):
          countline = countline + 1
      return X ,n,m
 
-print " This script takes 4 inputs mat_filename, lab_filename, threshold, cluster type (complete or single), label type (false, true) "
+print " This script takes 6 inputs mat_filename, lab_filename, threshold, cluster type (complete or single), label type (false, true), attribue file"
 
 pylab.matplotlib.use('Agg')
 

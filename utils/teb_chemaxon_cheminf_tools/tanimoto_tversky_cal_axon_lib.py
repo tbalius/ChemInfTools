@@ -120,7 +120,8 @@ def fingerprint_vec(SmilesString_vec,pid):
     #print name
     #Generatemd = "/nfs/software/jchem/5.10.3/bin/generatemd"
     #Generatemd = "/nfs/soft/jchem/jchem-5.10.3/bin/generatemd"
-    Generatemd = "/nfs/soft/jchem/current/bin/generatemd"
+    #Generatemd = "/nfs/soft/jchem/current/bin/generatemd"
+    Generatemd =  os.popen('echo $CHEMAXON_PATH').readlines()[0].strip()+'bin/generatemd'
     # write smiles to file
     fh = open("/"+TMPDIR+"/"+ name +"/temp"+pid+".smi",'w')
     for SmilesString in SmilesString_vec:
@@ -154,7 +155,8 @@ def molecularMass(SmilesString,pid):
     #print name
     #Generatemd = "/nfs/software/jchem/5.10.3/bin/generatemd"
     #Generatemd = "/nfs/soft/jchem/jchem-5.10.3/bin/generatemd"
-    Generatemd = "/nfs/soft/jchem/current/bin/generatemd"
+    #Generatemd = "/nfs/soft/jchem/current/bin/generatemd"
+    Generatemd =  os.popen('echo $CHEMAXON_PATH').readlines()[0].strip()+'bin/generatemd'
     # write smiles to file
     fh = open("/"+TMPDIR+"/"+ name +"/temp"+pid+".smi",'w')
     fh.write(SmilesString+'\n')
@@ -188,7 +190,9 @@ def heavyAtoms(SmilesString,pid):
     #print name
     #Generatemd = "/nfs/software/jchem/5.10.3/bin/generatemd"
     #Generatemd = "/nfs/soft/jchem/jchem-5.10.3/bin/generatemd"
-    Generatemd = "/nfs/soft/jchem/current/bin/generatemd"
+    #Generatemd = "/nfs/soft/jchem/current/bin/generatemd"
+    Generatemd =  os.popen('echo $CHEMAXON_PATH').readlines()[0].strip()+'bin/generatemd'
+    #Generatemd =  os.popen('which generatemd').readlines()[0].strip()
     # write smiles to file
     fh = open("/"+TMPDIR+"/"+ name +"/temp"+pid+".smi",'w')
     fh.write(SmilesString+'\n')
