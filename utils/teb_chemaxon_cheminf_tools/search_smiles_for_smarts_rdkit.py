@@ -39,6 +39,8 @@ def main():
    listlabel = []
    fh = open(in_smifile)
    for line in fh:
+       if 'smiles' in line: 
+           continue
        splitline = line.strip().split()
        smi = splitline[0]
        name = splitline[1]
