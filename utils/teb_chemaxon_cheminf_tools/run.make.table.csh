@@ -1,19 +1,25 @@
+#!/bin/csh
 
+# This is written by Trent Balius in ~2014 at UCSF in the Shoichet Lab. 
+# 
 
 #rm -rf images
 #mkdir  images
 
-set smiles_file = smo_my_ligands.smi 
+set smiles_file = $1 
 
-foreach clusterfile (`ls cluster*.txt`)
+#foreach clusterfile (`ls cluster*.txt`)
+foreach clusterfile (`ls cluster_rep_mod.txt`)
 
 #set cluster = 'cluster1'
 set cluster = ${clusterfile:r:t}
 
+echo $clusterfile $cluster
+
 #set ligandlist = `awk '{if(count > 1){print $1}; count=count+1}' $cluster.txt `
 set ligandlist = `awk '{if(length($1) > 2){print $1};}' $cluster.txt `
 
-   set filename = $cluster.html 
+set filename = $cluster.html 
 rm  $cluster.html
 
 # header for table
@@ -33,6 +39,7 @@ EOF
 
    echo "*******  $cluster ********"
    foreach lig ($ligandlist)
+         echo $lig
          set smiles1 = `grep $lig ${smiles_file} |  awk '{print $1}'`
 
          if !( -s images/$lig.png ) then

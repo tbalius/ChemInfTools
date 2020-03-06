@@ -67,7 +67,65 @@ def mat_to_vector(Mat):
 
     return X,Xvec
 
-def get_cluster(X,labels,attribute,clusttype,threshold,dirname):
+# for each molecule calculate the variance of distances to its other cluster members. 
+# this will tell us how close to the center of the cluster it is. 
+def cal_mol_cluster_variance(matrix,clusters): 
+
+    # matrix is the distance matrix
+    # clusters is the list of elements (index) with cluster asignment. 
+    N = len(clusters)
+    
+    numOfClusters = clusters.max()
+    print "cluster =", clusters.max(), clusters.min() 
+    #exit()
+    cluster_rep  = []
+    min_var_dist = []
+    # each cluster will have one rep. intialize to one
+    for i in range(numOfClusters):
+        cluster_rep.append(-1)
+        min_var_dist.append(1000.0)
+
+    # for each molecule calculate the mean of distance, the mean of the squared distance, and the count of distances (n-1, where n is the number of members). 
+    Ex  = []
+    Ex2 = []
+    Var = []
+    num = []
+    # here we intialize the arrays for each molecule
+    for i in range(N):
+        Ex.append(0.0) 
+        Ex2.append(0.0) 
+        Var.append(0.0) 
+        num.append(0) 
+
+    # calcuate and sum. 
+    for i in range(N): 
+        for j in range(N): 
+            if (i != j): 
+                if (clusters[i] == clusters[j]):
+                     Ex[i]  = Ex[i] + matrix[i,j]
+                     Ex2[i] = Ex2[i] + matrix[i,j]**2
+                     num[i] = num[i] + 1
+    # divid by num of cluster members
+    for i in range(N):
+        Ex[i]  = Ex[i]  / num[i] 
+        Ex2[i] = Ex2[i] / num[i]
+        Var[i] = Ex2[i] - Ex[i]**2
+        clust = clusters[i]-1 
+        if (min_var_dist[clust] > Var[i]):
+            cluster_rep[clust] = i
+            min_var_dist[clust] = Var[i]
+    print "mol_num cluster mean mean_of_squares var num"
+    for i in range(N):
+        print i, clusters[i], Ex[i], Ex2[i], Var[i], num[i] 
+        
+
+    for i in range(numOfClusters): 
+          print i, cluster_rep[i], min_var_dist[i]
+
+    return cluster_rep
+        
+
+def get_cluster(X,labels,clusttype,threshold,dirname):
     print "in function get_cluster"
     if len(X) != len(labels):
        print "len(X) != len(labels)"
@@ -85,32 +143,26 @@ def get_cluster(X,labels,attribute,clusttype,threshold,dirname):
     cluster_sizes = [] # list of the size of each cluster
 
     numOfClusters = clusters.max()
-    cluster_dic = {}
+
     ## intialize array that will store the labels for each cluster
     for i in range(numOfClusters):
         cluster_list.append('c'+ str(i+1)+' -- ')
         cluster_sizes.append(0)
-        cluster_dic[i] = []
     #
     ## fill array with labels by appending the string assosiated with each cluster
     for i in range(len(clusters)):
         cluster_list[clusters[i]-1] = cluster_list[clusters[i]-1] + labels[i] + ','
         cluster_sizes[clusters[i]-1] = cluster_sizes[clusters[i]-1] + 1
-        cluster_dic[clusters[i]-1].append([labels[i], attribute[i], i]) # list of lists, frist value is name, second attribut, the final value is the position, this will be used to look up atribute. 
 
-    cluster_rep_dic = {}
-    # get choice representative from each cluster
-    for key in cluster_dic.keys():
-       mem_list = cluster_dic[key]
-       min_mem  = mem_list[0]
-       for mem in mem_list: 
-           if (float(min_mem[1]) > float(mem[1])): # the second value is the attribute
-               print min_mem[1] +">"+ mem[1]
-               min_mem = mem
-       cluster_rep_dic[key] = min_mem
     ## write the cluster
     for i in range(numOfClusters):
         print cluster_list[i]
+
+    filename = "mol_cluster_list.txt"
+    fh_mcl = open(filename,'w')
+    for i in range(len(clusters)): 
+       fh_mcl.write('%s %d\n'%(labels[i],clusters[i]))
+        
 
     ## write the cluster with more than 3 members
 #    os.system('rm -rf   large_clusters'+dirname)
@@ -118,9 +170,8 @@ def get_cluster(X,labels,attribute,clusttype,threshold,dirname):
 #    os.chdir('large_clusters'+dirname)
 
     # pick a member of the cluster to be the representive member. 
-    # Right now this is done by just taking the frist member
-    # Ideas are to use lowest molecular weight or lowest afinity. 
-    # perhaps we can pass these attibutes to the script. 
+    # Right now this is done by picking the molecule with the minimum variance. 
+    reps = cal_mol_cluster_variance(X,clusters) 
     filename = "cluster_rep.txt"
     fh_rep = open(filename,'w')
     print " larger clusters: "
@@ -129,8 +180,7 @@ def get_cluster(X,labels,attribute,clusttype,threshold,dirname):
        fh = open(filename,'w')
        fh.write(cluster_list[i].replace(' ','').replace(',','\n').replace('-','\n'))
        fh.close()
-       #fh_rep.write(cluster_list[i].replace(' ','').split(',')[0].split('-')[2]+'\n')
-       fh_rep.write(cluster_rep_dic[i][0]+","+cluster_rep_dic[i][1]+'\n')
+       fh_rep.write("cluster"+str(i+1)+','+str(reps[i])+","+labels[reps[i]]+'\n')
 
        if cluster_sizes[i] > 3:
            print "  " + cluster_list[i]
@@ -271,14 +321,12 @@ labfilename = sys.argv[2]
 threshold   = float(sys.argv[3])
 clustertype = sys.argv[4]
 label_on  = sys.argv[5]
-attfilename  = sys.argv[6]
 
 print "mat_filename = "+ matfilename  
 print "lab_filename = "+ labfilename  
 print "threshold = "+ str(threshold)
 print "cluster type = "+ clustertype  
 print "label type = "+ label_on  
-print "attribute = "+attfilename
 
 #Y = sch.linkage(Xvec, method='complete')
 #Y = sch.linkage(Xvec, method='single')
@@ -288,7 +336,6 @@ if not ( clustertype == "complete" or clustertype == "single"):
     print "cluster type must be complete or single"
 
 labels1 = getlabel(labfilename)
-att = getlabel(attfilename)
 #labels2 = getlabel(lab2filename)
 
 X,n,m           = import_mat(matfilename)
@@ -299,7 +346,7 @@ X,n,m           = import_mat(matfilename)
 #threshold = 0.51
 #threshold =  0.4
 ## create a distance matrix --> dendogram by comparing all rows
-Y1 = get_cluster(X,labels1,att,clustertype,threshold,'set2')
+Y1 = get_cluster(X,labels1,clustertype,threshold,'set2')
 
 #get_min(X,labels1,labels2,50)
 
