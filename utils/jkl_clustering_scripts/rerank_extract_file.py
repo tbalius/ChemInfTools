@@ -58,8 +58,10 @@ ligands_list = []
 ligands_list_file = open(ligands_name_file,'r')
 
 for line in ligands_list_file:
-	splitline = line.split()
-	ligands_list.append(splitline[0])
+	#splitline = line.split()
+	#ligands_list.append(splitline[0])
+	splitline = line.split(',')
+	ligands_list.append(splitline[2])
 print "len(ligands.name) = "+str(len(ligands_list))
 
 #output_decoys_file = open(outputdir+'/decoys.name','w')
@@ -67,3 +69,5 @@ output_extract_file = open(outputdir+'/extract_all.sort.uniq.re.txt','w')
 
 for i in range(len(ligands_list)):
 	output_extract_file.write(dict_line[ligands_list[i]]+'\n')
+output_extract_file.close()
+
