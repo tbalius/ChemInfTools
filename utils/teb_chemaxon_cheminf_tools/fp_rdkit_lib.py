@@ -33,11 +33,11 @@ def get_fp(infile,outfile):
       #fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,4,2048)
       fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,4,1024)
       N = len(fp1bv)
-      fh.write("fingerprint = " )
+      fh2.write("fingerprint = " )
       fpstr = ''
       for i in range(N):
             fh2.write('%d'%fp1bv[i]) 
-            fpstr = fpstr + fp1bv[i]
+            fpstr = fpstr + '%d'%fp1bv[i]
             if ((i+1)%8 == 0 and i!=N-1):
                  fh2.write('|') 
                  fpstr = fpstr + '|'

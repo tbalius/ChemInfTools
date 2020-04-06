@@ -17,7 +17,7 @@ def str_to_bit(s):
     ## check that the string is all zerros and ones
     for c in s:
         if not (int(c)==1 or int(c)==0):
-           print "error: string not zerros and ones"
+           print ("error: string not zerros and ones")
            exit()
 
     # note the 2^7 = 10000000
@@ -57,7 +57,7 @@ def tanimoto(fp1,fp2):
     fp2_bits = fp2.split('|')
 
     if len(fp1_bits) != len(fp2_bits):
-       print "ERROR: bits do not agree in lenth"
+       print ("ERROR: bits do not agree in lenth")
 
     or_num_one  = 0
     and_num_one = 0
@@ -84,7 +84,7 @@ def tversky_index(fp1,fp2,alpha,beta):
     fp2_bits = fp2.split('|') # B
 
     if len(fp1_bits) != len(fp2_bits):
-       print "ERROR: bits do not agree in lenth"
+       print ("ERROR: bits do not agree in lenth")
 
     A_bs_B_num_one = 0 # inverse comlement 
     B_bs_A_num_one = 0 #
@@ -132,7 +132,7 @@ def fingerprint_vec(SmilesString_vec,pid):
     #os.popen("/raid3/software/openbabel/openbabel-2.2.1-32/bin/babel -isdf /"+TMPDIR+"/tbalius/temp.sdf -osmi /"+TMPDIR+"/tbalius/temp2.smi -d")
  
     comand = Generatemd + " c /"+TMPDIR+"/" + name + "/temp"+pid+".smi -k ECFP -2"
-    print "runing the comand:"+comand
+    print ("runing the comand:"+comand)
     output = os.popen(comand).readlines()
     #print "output:"+str(output)
     fp_vec = []
@@ -166,7 +166,7 @@ def molecularMass(SmilesString,pid):
     #os.popen("/raid3/software/openbabel/openbabel-2.2.1-32/bin/babel -isdf /"+TMPDIR+"/tbalius/temp.sdf -osmi /"+TMPDIR+"/tbalius/temp2.smi -d")
 
     comand = Generatemd + " c /"+TMPDIR+"/" + name + "/temp"+pid+".smi -k Mass"
-    print "runing the comand:"+comand
+    print ("runing the comand:"+comand)
     output = os.popen(comand).readlines()
     #print output
     #print "output:"+str(output)
@@ -202,7 +202,7 @@ def heavyAtoms(SmilesString,pid):
     #os.popen("/raid3/software/openbabel/openbabel-2.2.1-32/bin/babel -isdf /"+TMPDIR+"/tbalius/temp.sdf -osmi /"+TMPDIR+"/tbalius/temp2.smi -d")
 
     comand = Generatemd + " c /"+TMPDIR+"/" + name + "/temp"+pid+".smi -k Heavy"
-    print "runing the comand:"+comand
+    print ("runing the comand:"+comand)
     output = os.popen(comand).readlines()
     #print "output:"+str(output)
     #outlines = output.split('\n')
@@ -210,7 +210,7 @@ def heavyAtoms(SmilesString,pid):
     lastline = output[len(output) - 1]
     heavy = lastline.split()[1]
 
-    print output,outlines,lastline,heavy
+    print (output,outlines,lastline,heavy)
     # remove the temp file. 
     os.system("rm -fr "+"/"+TMPDIR+"/" + name + "/temp"+pid+".smi")
     #print fp
@@ -229,10 +229,10 @@ def get_fp(infile,outfile,pid):
   for line in lines:
      splitline = line.split()
      if len(splitline) > 2:
-        print line
-        print "ERROR:len(smiles) > 2"
+        print (line)
+        print ("ERROR:len(smiles) > 2")
         exit()
-     print splitline
+     print (splitline)
 
      smiles_vec.append(splitline[0])
      #print "simles = " + str(smiles);
