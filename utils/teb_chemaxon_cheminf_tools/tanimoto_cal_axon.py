@@ -10,15 +10,15 @@ import tanimoto_tversky_cal_axon_lib as tccalc
 
 def main():
   if not (len(sys.argv) == 4 or len(sys.argv) == 5): # if no input
-     print "ERORR"
-     print "syntax: python tanimoto_cal_axon.py -one smiles1 outputprefix"
-     print "         this produces a squere symestric matrix of set1 with itself. "
-     print "syntax: python tanimoto_cal_axon.py -two smiles1 smiles2 outputprefix"
-     print "         this produces a rectangular non-symestric matrix of set1 to set2"
+     print ("ERORR")
+     print ("syntax: python tanimoto_cal_axon.py -one smiles1 outputprefix")
+     print ("         this produces a squere symestric matrix of set1 with itself. ")
+     print ("syntax: python tanimoto_cal_axon.py -two smiles1 smiles2 outputprefix")
+     print ("         this produces a rectangular non-symestric matrix of set1 to set2")
      return
 
   pid = str(os.getpid()) # get the process idenifier so that we do not right over the same file. 
-  print pid
+  print (pid)
 
   oneortwo    = sys.argv[1]
   smilesfile1 = sys.argv[2]
@@ -28,7 +28,7 @@ def main():
     smilesfile2 = sys.argv[3]
     outfileprefix = sys.argv[4]
   else:
-      print "the frist parameter must be -one or -two."
+      print ("the frist parameter must be -one or -two.")
       exit()
 
   outfile1 = outfileprefix +'.1.fp'

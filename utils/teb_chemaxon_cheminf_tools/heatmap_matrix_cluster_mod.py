@@ -107,6 +107,9 @@ def cal_mol_cluster_variance(matrix,clusters):
                      num[i] = num[i] + 1
     # divid by num of cluster members
     for i in range(N):
+        if (num[i] == 0):
+            print "warning: Num == 0"
+            num[i] = 1
         Ex[i]  = Ex[i]  / num[i] 
         Ex2[i] = Ex2[i] / num[i]
         Var[i] = Ex2[i] - Ex[i]**2
