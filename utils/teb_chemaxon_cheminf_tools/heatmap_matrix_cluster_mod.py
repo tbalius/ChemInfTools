@@ -41,13 +41,14 @@ def mat_to_vector(Mat):
     n = len(Mat[0])
 
     if (m != n):
-        print "inconsitancy in numbers of rows and columns in the matrix."
+        print ("inconsitancy in numbers of rows and columns in the matrix.")
         sys.exit()
 
-    print m,n
+    print (m,n)
 
     X = scipy.zeros([m,n])
-    Xvec = scipy.zeros(n*(n-1)/2)
+    #Xvec = scipy.zeros(n*(n-1)/2)
+    Xvec = scipy.zeros(int(n*(n-1)/2))
 
     count2    = 0
 
@@ -76,7 +77,7 @@ def cal_mol_cluster_variance(matrix,clusters):
     N = len(clusters)
     
     numOfClusters = clusters.max()
-    print "cluster =", clusters.max(), clusters.min() 
+    print ("cluster =", clusters.max(), clusters.min() )
     #exit()
     cluster_rep  = []
     min_var_dist = []
@@ -100,13 +101,15 @@ def cal_mol_cluster_variance(matrix,clusters):
     # calcuate and sum. 
     for i in range(N): 
         for j in range(N): 
-            if (i != j): 
+            #if (i != j): 
                 if (clusters[i] == clusters[j]):
                      Ex[i]  = Ex[i] + matrix[i,j]
                      Ex2[i] = Ex2[i] + matrix[i,j]**2
                      num[i] = num[i] + 1
     # divid by num of cluster members
     for i in range(N):
+        if (num[i] == 0.0):
+            print ('i==%d,Ex[i]==%f'%(i,Ex[i]))
         Ex[i]  = Ex[i]  / num[i] 
         Ex2[i] = Ex2[i] / num[i]
         Var[i] = Ex2[i] - Ex[i]**2
@@ -114,22 +117,22 @@ def cal_mol_cluster_variance(matrix,clusters):
         if (min_var_dist[clust] > Var[i]):
             cluster_rep[clust] = i
             min_var_dist[clust] = Var[i]
-    print "mol_num cluster mean mean_of_squares var num"
+    print ("mol_num cluster mean mean_of_squares var num")
     for i in range(N):
-        print i, clusters[i], Ex[i], Ex2[i], Var[i], num[i] 
+        print (i, clusters[i], Ex[i], Ex2[i], Var[i], num[i] )
         
 
     for i in range(numOfClusters): 
-          print i, cluster_rep[i], min_var_dist[i]
+          print (i, cluster_rep[i], min_var_dist[i])
 
     return cluster_rep
         
 
 def get_cluster(X,labels,clusttype,threshold,dirname):
-    print "in function get_cluster"
+    print ("in function get_cluster")
     if len(X) != len(labels):
-       print "len(X) != len(labels)"
-       print len(X), len(labels)
+       print ("len(X) != len(labels)")
+       print (len(X), len(labels))
        exit()
 
     Xnew,Xvec = mat_to_vector(X)
@@ -138,7 +141,7 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
     #Y = sch.linkage(Xvec, method='single')
     Y = sch.linkage(Xvec, method=clusttype)
     clusters = sch.fcluster(Y, threshold, 'distance')
-    print clusters
+    print (clusters)
     cluster_list  = [] # list of pdb names in each cluster
     cluster_sizes = [] # list of the size of each cluster
 
@@ -156,7 +159,7 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
 
     ## write the cluster
     for i in range(numOfClusters):
-        print cluster_list[i]
+        print (cluster_list[i])
 
     filename = "mol_cluster_list.txt"
     fh_mcl = open(filename,'w')
@@ -174,7 +177,7 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
     reps = cal_mol_cluster_variance(X,clusters) 
     filename = "cluster_rep.txt"
     fh_rep = open(filename,'w')
-    print " larger clusters: "
+    print (" larger clusters: ")
     for i in range(numOfClusters):
        filename = "cluster" + str(i+1) + ".txt"
        fh = open(filename,'w')
@@ -183,7 +186,7 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
        fh_rep.write("cluster"+str(i+1)+','+str(reps[i])+","+labels[reps[i]]+'\n')
 
        if cluster_sizes[i] > 3:
-           print "  " + cluster_list[i]
+           print ("  " + cluster_list[i])
 #           name = cluster_list[i].split('--')[0].replace(' ','')
 #           mols = cluster_list[i].split('--')[1].split(',')
            ## get images from zinc
@@ -287,12 +290,13 @@ def import_mat(matfilename):
      n = len(lines[0].split(','))
      
      if (m != n):
-         print "inconsitancy in numbers of rows and columns in the matrix."
+         print ("inconsitancy in numbers of rows and columns in the matrix.")
      
-     print m,n
+     print (m,n)
      
      X = scipy.zeros([m,n])
-     Xvec = scipy.zeros(n*(n-1)/2)
+     #print(n*(n-1)/2)
+     Xvec = scipy.zeros(int(n*(n-1)/2))
     
      countline = 0
      count2    = 0 
@@ -300,7 +304,7 @@ def import_mat(matfilename):
          line = line.strip('\n')
          splitline = line.split(',')
          if (n != (len(splitline))):
-             print "ERROR: n != (len(splitline), inconsitancy in number of elements in rows"
+             print ("ERROR: n != (len(splitline), inconsitancy in number of elements in rows")
              sys.exit()
      
          for i in range(0,n):
@@ -310,7 +314,7 @@ def import_mat(matfilename):
          countline = countline + 1
      return X ,n,m
 
-print " This script takes 4 inputs mat_filename, lab_filename, threshold, cluster type (complete or single), label type (false, true) "
+print (" This script takes 4 inputs mat_filename, lab_filename, threshold, cluster type (complete or single), label type (false, true) ")
 
 pylab.matplotlib.use('Agg')
 
@@ -322,18 +326,18 @@ threshold   = float(sys.argv[3])
 clustertype = sys.argv[4]
 label_on  = sys.argv[5]
 
-print "mat_filename = "+ matfilename  
-print "lab_filename = "+ labfilename  
-print "threshold = "+ str(threshold)
-print "cluster type = "+ clustertype  
-print "label type = "+ label_on  
+print ("mat_filename = "+ matfilename  )
+print ("lab_filename = "+ labfilename  )
+print ("threshold = "+ str(threshold)  )
+print ("cluster type = "+ clustertype  )
+print ("label type = "+ label_on       )   
 
 #Y = sch.linkage(Xvec, method='complete')
 #Y = sch.linkage(Xvec, method='single')
 
 
 if not ( clustertype == "complete" or clustertype == "single"):
-    print "cluster type must be complete or single"
+    print ("cluster type must be complete or single")
 
 labels1 = getlabel(labfilename)
 #labels2 = getlabel(lab2filename)
@@ -367,7 +371,7 @@ ax1.invert_xaxis()
 ticks = ax1.get_xticks()
 fontsizeval = 6
 for i in range(0,len(ticks)):
-    print i
+    print (i)
     labels = ax1.xaxis.get_major_ticks()[i].label
     labels.set_fontsize(fontsizeval)
     labels.set_rotation('vertical')
