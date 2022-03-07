@@ -204,13 +204,16 @@ def heavyAtoms(SmilesString,pid):
     comand = Generatemd + " c /"+TMPDIR+"/" + name + "/temp"+pid+".smi -k Heavy"
     print ("runing the comand:"+comand)
     output = os.popen(comand).readlines()
-    #print "output:"+str(output)
+    print "output:"+str(output)
     #outlines = output.split('\n')
     #lastline = outlines[len(outlines)-1]
-    lastline = output[len(output) - 1]
-    heavy = lastline.split()[1]
+    lastline = output[len(output) - 1].strip()
+    heavy = lastline.split()[1].strip()
 
-    print (output,outlines,lastline,heavy)
+    #print (output,outlines,lastline,heavy)
+    print (heavy)
+    print (lastline)
+    print (output,lastline,heavy)
     # remove the temp file. 
     os.system("rm -fr "+"/"+TMPDIR+"/" + name + "/temp"+pid+".smi")
     #print fp

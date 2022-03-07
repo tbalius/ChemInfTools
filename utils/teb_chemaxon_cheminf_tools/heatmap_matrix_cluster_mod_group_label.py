@@ -1,3 +1,4 @@
+#! /raid1/people/tbalius/zzz.virtualenvs/sgehead_python_env/bin/python
 
 ## Writen by Trent E. Balius in B. Shoichet group
 
@@ -40,16 +41,13 @@ def mat_to_vector(Mat):
     n = len(Mat[0])
 
     if (m != n):
-        print ("inconsitancy in numbers of rows and columns in the matrix.")
+        print "inconsitancy in numbers of rows and columns in the matrix."
         sys.exit()
 
-    print (m,n)
+    print m,n
 
-    #X = scipy.zeros([m,n])
-    X = numpy.zeros([m,n])
-    #Xvec = scipy.zeros(n*(n-1)/2)
-    #Xvec = numpy.zeros(n*(n-1)/2)
-    Xvec = numpy.zeros(int(n*(n-1)/2))
+    X = scipy.zeros([m,n])
+    Xvec = scipy.zeros(n*(n-1)/2)
 
     count2    = 0
 
@@ -69,11 +67,72 @@ def mat_to_vector(Mat):
 
     return X,Xvec
 
-def get_cluster(X,labels,clusttype,threshold,dirname):
-    print ("in function get_cluster")
+# for each molecule calculate the variance of distances to its other cluster members. 
+# this will tell us how close to the center of the cluster it is. 
+def cal_mol_cluster_variance(matrix,clusters): 
+
+    # matrix is the distance matrix
+    # clusters is the list of elements (index) with cluster asignment. 
+    N = len(clusters)
+    
+    numOfClusters = clusters.max()
+    print "cluster =", clusters.max(), clusters.min() 
+    #exit()
+    cluster_rep  = []
+    min_var_dist = []
+    # each cluster will have one rep. intialize to one
+    for i in range(numOfClusters):
+        cluster_rep.append(-1)
+        min_var_dist.append(1000.0)
+
+    # for each molecule calculate the mean of distance, the mean of the squared distance, and the count of distances (n-1, where n is the number of members). 
+    Ex  = []
+    Ex2 = []
+    Var = []
+    num = []
+    # here we intialize the arrays for each molecule
+    for i in range(N):
+        Ex.append(0.0) 
+        Ex2.append(0.0) 
+        Var.append(0.0) 
+        num.append(0) 
+
+    # calcuate and sum. 
+    for i in range(N): 
+        for j in range(N): 
+            if (i != j): 
+                if (clusters[i] == clusters[j]):
+                     Ex[i]  = Ex[i] + matrix[i,j]
+                     Ex2[i] = Ex2[i] + matrix[i,j]**2
+                     num[i] = num[i] + 1
+    # divid by num of cluster members
+    for i in range(N):
+        if (num[i] == 0):
+            print "warning: Num == 0"
+            num[i] = 1
+        Ex[i]  = Ex[i]  / num[i] 
+        Ex2[i] = Ex2[i] / num[i]
+        Var[i] = Ex2[i] - Ex[i]**2
+        clust = clusters[i]-1 
+        if (min_var_dist[clust] > Var[i]):
+            cluster_rep[clust] = i
+            min_var_dist[clust] = Var[i]
+    print "mol_num cluster mean mean_of_squares var num"
+    for i in range(N):
+        print i, clusters[i], Ex[i], Ex2[i], Var[i], num[i] 
+        
+
+    for i in range(numOfClusters): 
+          print i, cluster_rep[i], min_var_dist[i]
+
+    return cluster_rep
+        
+
+def get_cluster(X,labels,glabels,clusttype,threshold,dirname):
+    print "in function get_cluster"
     if len(X) != len(labels):
-       print ("len(X) != len(labels)")
-       print (len(X), len(labels))
+       print "len(X) != len(labels)"
+       print len(X), len(labels)
        exit()
 
     Xnew,Xvec = mat_to_vector(X)
@@ -82,17 +141,12 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
     #Y = sch.linkage(Xvec, method='single')
     Y = sch.linkage(Xvec, method=clusttype)
     clusters = sch.fcluster(Y, threshold, 'distance')
-    print (clusters)
+    print clusters
     cluster_list  = [] # list of pdb names in each cluster
     cluster_sizes = [] # list of the size of each cluster
 
     numOfClusters = clusters.max()
-    ## write out the molname and clusternumber
-    fh_n_c = open("clusters.txt",'w')
-    fh_n_c.write('name, cluster_num\n')
-    for i in range(len(clusters)):
-       fh_n_c.write('%s, %d\n'%(labels[i],clusters[i]))
-    fh_n_c.close()
+
     ## intialize array that will store the labels for each cluster
     for i in range(numOfClusters):
         cluster_list.append('c'+ str(i+1)+' -- ')
@@ -105,7 +159,13 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
 
     ## write the cluster
     for i in range(numOfClusters):
-        print (cluster_list[i])
+        print cluster_list[i]
+
+    filename = "mol_cluster_list.txt"
+    fh_mcl = open(filename,'w')
+    for i in range(len(clusters)): 
+       fh_mcl.write('%s %s %d\n'%(labels[i],glabels[i],clusters[i]))
+        
 
     ## write the cluster with more than 3 members
 #    os.system('rm -rf   large_clusters'+dirname)
@@ -113,21 +173,20 @@ def get_cluster(X,labels,clusttype,threshold,dirname):
 #    os.chdir('large_clusters'+dirname)
 
     # pick a member of the cluster to be the representive member. 
-    # Right now this is done by just taking the frist member
-    # Ideas are to use lowest molecular weight or lowest afinity. 
-    # perhaps we can pass these attibutes to the script. 
+    # Right now this is done by picking the molecule with the minimum variance. 
+    reps = cal_mol_cluster_variance(X,clusters) 
     filename = "cluster_rep.txt"
     fh_rep = open(filename,'w')
-    print (" larger clusters: ")
+    print " larger clusters: "
     for i in range(numOfClusters):
        filename = "cluster" + str(i+1) + ".txt"
        fh = open(filename,'w')
        fh.write(cluster_list[i].replace(' ','').replace(',','\n').replace('-','\n'))
        fh.close()
-       fh_rep.write(cluster_list[i].replace(' ','').split(',')[0].split('-')[2]+'\n')
+       fh_rep.write("cluster"+str(i+1)+','+str(reps[i])+","+labels[reps[i]]+'\n')
 
        if cluster_sizes[i] > 3:
-           print ("  " + cluster_list[i])
+           print "  " + cluster_list[i]
 #           name = cluster_list[i].split('--')[0].replace(' ','')
 #           mols = cluster_list[i].split('--')[1].split(',')
            ## get images from zinc
@@ -227,19 +286,16 @@ def import_mat(matfilename):
      file.close()
      
      
-     m = int(len(lines))
-     n = int(len(lines[0].split(',')))
+     m = len(lines)
+     n = len(lines[0].split(','))
      
      if (m != n):
-         print ("inconsitancy in numbers of rows and columns in the matrix.")
+         print "inconsitancy in numbers of rows and columns in the matrix."
      
-     print (m,n)
+     print m,n
      
-     #X = scipy.zeros([m,n])
-     #Xvec = scipy.zeros(n*(n-1)/2)
-     X = numpy.zeros([m,n])
-     print (n*(n-1)/2) 
-     Xvec = numpy.zeros(int(n*(n-1)/2))
+     X = scipy.zeros([m,n])
+     Xvec = scipy.zeros(n*(n-1)/2)
     
      countline = 0
      count2    = 0 
@@ -247,7 +303,7 @@ def import_mat(matfilename):
          line = line.strip('\n')
          splitline = line.split(',')
          if (n != (len(splitline))):
-             print ("ERROR: n != (len(splitline), inconsitancy in number of elements in rows")
+             print "ERROR: n != (len(splitline), inconsitancy in number of elements in rows"
              sys.exit()
      
          for i in range(0,n):
@@ -257,7 +313,7 @@ def import_mat(matfilename):
          countline = countline + 1
      return X ,n,m
 
-print (" This script takes 4 inputs mat_filename, lab_filename, threshold, cluster type (complete or single), label type (false, true) ")
+print " This script takes 5 inputs mat_filename, lab_filename, lab_group (if multiple groups are combined), threshold, cluster type (complete or single), label type (false, true) "
 
 pylab.matplotlib.use('Agg')
 
@@ -265,24 +321,27 @@ ZERRO = 0.0
 
 matfilename  = sys.argv[1]
 labfilename = sys.argv[2]
-threshold   = float(sys.argv[3])
-clustertype = sys.argv[4]
-label_on  = sys.argv[5]
+grplabfilename = sys.argv[3]
+threshold   = float(sys.argv[4])
+clustertype = sys.argv[5]
+label_on  = sys.argv[6]
 
-print ("mat_filename = "+ matfilename  )
-print ("lab_filename = "+ labfilename  )
-print ("threshold = "+ str(threshold) )
-print ("cluster type = "+ clustertype ) 
-print ("label type = "+ label_on  )
+print "mat_filename = "+ matfilename  
+print "lab_filename = "+ labfilename  
+print "grp_lab_filename = "+ grplabfilename  
+print "threshold = "+ str(threshold)
+print "cluster type = "+ clustertype  
+print "label type = "+ label_on  
 
 #Y = sch.linkage(Xvec, method='complete')
 #Y = sch.linkage(Xvec, method='single')
 
 
 if not ( clustertype == "complete" or clustertype == "single"):
-    print ("cluster type must be complete or single")
+    print "cluster type must be complete or single"
 
 labels1 = getlabel(labfilename)
+grplabels1 = getlabel(grplabfilename)
 #labels2 = getlabel(lab2filename)
 
 X,n,m           = import_mat(matfilename)
@@ -293,7 +352,7 @@ X,n,m           = import_mat(matfilename)
 #threshold = 0.51
 #threshold =  0.4
 ## create a distance matrix --> dendogram by comparing all rows
-Y1 = get_cluster(X,labels1,clustertype,threshold,'set2')
+Y1 = get_cluster(X,labels1,grplabels1,clustertype,threshold,'set2')
 
 #get_min(X,labels1,labels2,50)
 
@@ -314,7 +373,7 @@ ax1.invert_xaxis()
 ticks = ax1.get_xticks()
 fontsizeval = 6
 for i in range(0,len(ticks)):
-    print (i)
+    print i
     labels = ax1.xaxis.get_major_ticks()[i].label
     labels.set_fontsize(fontsizeval)
     labels.set_rotation('vertical')
@@ -330,9 +389,11 @@ X = X[:,idx1]
 #labels_sort = labels1[idx1]
 ## make sorted label list
 labels_sort = []
+grplabels_sort = []
 for i in idx1:
   #labels_sort.append('c'+str(clusters[i]) + '-'+ labels[i])
   labels_sort.append(labels1[i])
+  grplabels_sort.append(int(grplabels1[i]))
 
 cdict = {'red': ((0.0, 0.0, 0.0),
                   (0.0, 0.0, 0.0), 
@@ -378,6 +439,31 @@ else: # label_on == "false"
 # Plot colorbar.
 axcolor = fig.add_axes([0.91,0.1,0.02,0.6])
 pylab.colorbar(im, cax=axcolor)
+
+axmatrix = fig.add_axes([0.05,0.1,0.02,0.6])
+
+G = scipy.zeros([len(grplabels_sort),1])
+for i in range(len(grplabels_sort)):
+    G[i][0] = grplabels_sort[i]
+
+cdict = {'red': ((0.0, 0.0, 0.0),
+                 (0.4, 0.0, 0.0),
+                 (0.5, 1.0, 1.0),
+                 (0.6, 0.6, 0.6),
+                 (1.0, 0.0, 0.0)),
+          'green': ((0.0, 0.0, 0.0),
+                    (0.6, 0.0, 0.0),
+                    (1.0, 1.0, 1.0)),
+          'blue': ((0.0, 1.0, 1.0),
+                   (0.6, 0.0, 0.0),
+                   (1.0, 0.0, 0.0))}
+
+my_cmap = matplotlib.colors.LinearSegmentedColormap('my_colormap',cdict,3)
+#im = axmatrix.imshow(grplabels_sort, aspect='auto', origin='lower',interpolation='nearest')
+im = axmatrix.imshow(G, aspect='auto', origin='lower',interpolation='nearest', cmap=my_cmap)
+axmatrix.set_xticks([])
+axmatrix.set_yticks([])
+
 fig.show()
 fig.savefig('dendrogram.png',dpi=600)
 
