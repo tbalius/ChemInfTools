@@ -12,6 +12,7 @@ def main():
   outfileprefix = sys.argv[2]
 
   outfileF = outfileprefix +'.hac'
+  fw = open(outfileF,'w')
 
   pid = str(os.getpid()) # get the process idenifier so that we do not right over the same file. 
 
@@ -26,7 +27,7 @@ def main():
       #print line, name
       #names.append(name)
       heavy = tccalc.heavyAtoms(smiles,pid)
-      outfileF.write("%s %s\n"%(name,heavy))
+      fw.write("%s %s\n"%(name,heavy))
   file1.close()
   file2.close()
   
