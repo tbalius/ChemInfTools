@@ -58,10 +58,10 @@ ligands_list = []
 ligands_list_file = open(ligands_name_file,'r')
 
 for line in ligands_list_file:
-	#splitline = line.split()
-	#ligands_list.append(splitline[0])
-	splitline = line.split(',')
-	ligands_list.append(splitline[2])
+	splitline = line.split()
+	ligands_list.append(splitline[0])
+	#splitline = line.split(',')
+	#ligands_list.append(splitline[2])
 print "len(ligands.name) = "+str(len(ligands_list))
 
 #output_decoys_file = open(outputdir+'/decoys.name','w')
