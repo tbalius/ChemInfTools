@@ -204,7 +204,7 @@ def heavyAtoms(SmilesString,pid):
     comand = Generatemd + " c /"+TMPDIR+"/" + name + "/temp"+pid+".smi -k Heavy"
     print ("runing the comand:"+comand)
     output = os.popen(comand).readlines()
-    print "output:"+str(output)
+    print ("output:"+str(output))
     #outlines = output.split('\n')
     #lastline = outlines[len(outlines)-1]
     lastline = output[len(output) - 1].strip()
