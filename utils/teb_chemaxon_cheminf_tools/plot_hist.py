@@ -20,7 +20,7 @@ import scipy.stats    as stats
 
 def read_data_file(filename):
 
-    print filename
+    print (filename)
     file = open(filename)
     lines = file.readlines()
     file.close()
@@ -32,7 +32,7 @@ def read_data_file(filename):
         splitline = line.split()
         #print len(splitline)
         if (len(splitline) != 1): # data file has one column
-            print line
+            print (line)
             continue
         #print splitline[5] 
         data[i] = float(splitline[0])
@@ -42,14 +42,14 @@ def read_data_file(filename):
 
 
 if len(sys.argv) != 3:
-   print "error:  this program takes 1 input filename and a title  "    
+   print ("error:  this program takes 1 input filename and a title  "    )
    exit()
 
 filename1     = sys.argv[1]
 titlestr      = sys.argv[2]
 
-print "filename1 = " + filename1
-print "title     = " + titlestr
+print ("filename1 = " + filename1)
+print ("title     = " + titlestr)
 
 data = read_data_file(filename1)
 
@@ -59,10 +59,11 @@ midbin = scipy.zeros([len(n),1])
 for i in range(0,len(bins)-1):
     midbin[i] = (bins[i] + bins[i+1])/2
 
-print midbin
-print bins
-print len(n) 
-print len(bins) 
+print (midbin)
+print (bins)
+print (n)
+print (len(n) )
+print (len(bins) )
 #fig = pylab.figure(figsize=(16,8))
 fig = pylab.figure(figsize=(8,8))
 #axis = fig.add_axes([0.1,0.1,0.3,0.3])

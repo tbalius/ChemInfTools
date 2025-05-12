@@ -46,9 +46,11 @@ def mat_to_vector(Mat):
 
     print (m,n)
 
-    X = scipy.zeros([m,n])
+    #X = scipy.zeros([m,n])
+    X = numpy.zeros([m,n])
     #Xvec = scipy.zeros(n*(n-1)/2)
-    Xvec = scipy.zeros(int(n*(n-1)/2))
+    #Xvec = scipy.zeros(int(n*(n-1)/2))
+    Xvec = numpy.zeros(int(n*(n-1)/2))
 
     count2    = 0
 
@@ -109,7 +111,7 @@ def cal_mol_cluster_variance(matrix,clusters):
     # divid by num of cluster members
     for i in range(N):
         if (num[i] == 0):
-            print "warning: Num == 0"
+            print ("warning: Num == 0")
             print ('i==%d,Ex[i]==%f'%(i,Ex[i]))
             num[i] = 1
         Ex[i]  = Ex[i]  / num[i] 
@@ -296,9 +298,11 @@ def import_mat(matfilename):
      
      print (m,n)
      
-     X = scipy.zeros([m,n])
+     #X = scipy.zeros([m,n])
+     X = numpy.zeros([m,n])
      #print(n*(n-1)/2)
-     Xvec = scipy.zeros(int(n*(n-1)/2))
+     #Xvec = scipy.zeros(int(n*(n-1)/2))
+     Xvec = numpy.zeros(int(n*(n-1)/2))
     
      countline = 0
      count2    = 0 
@@ -374,7 +378,7 @@ ticks = ax1.get_xticks()
 fontsizeval = 6
 for i in range(0,len(ticks)):
     print (i)
-    labels = ax1.xaxis.get_major_ticks()[i].label
+    labels = ax1.xaxis.get_major_ticks()[i].label1
     labels.set_fontsize(fontsizeval)
     labels.set_rotation('vertical')
 
@@ -428,7 +432,7 @@ if (label_on == "true"):
   #fontsizeval = 6
   for i in range(0,n):
   #    print i
-      labels = axmatrix.xaxis.get_major_ticks()[i].label
+      labels = axmatrix.xaxis.get_major_ticks()[i].label1
       labels.set_fontsize(fontsizeval)
       labels.set_rotation('vertical')
 else: # label_on == "false"

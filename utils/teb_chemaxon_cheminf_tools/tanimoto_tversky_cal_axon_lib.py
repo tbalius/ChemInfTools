@@ -111,8 +111,8 @@ def tversky_index(fp1,fp2,alpha,beta):
 
 ## this function call chemaxon and computes a bunch of fingerprints
 def fingerprint_vec(SmilesString_vec,pid):
-    TMPDIR = "scratch"
-    #TMPDIR = "tmp"
+    #TMPDIR = "scratch"
+    TMPDIR = "tmp"
     # this will get the users name. need to write temp file
     #pid = str(os.getpid()) # get the process idenifier so that we do not right over the same file. 
     #print pid
@@ -147,8 +147,8 @@ def fingerprint_vec(SmilesString_vec,pid):
 
 ## this function call chemaxon and computes the molecular Mass of the molecule
 def molecularMass(SmilesString,pid):
-    TMPDIR = "scratch"
-    #TMPDIR = "tmp"
+    #TMPDIR = "scratch"
+    TMPDIR = "tmp"
     # this will get the users name. need to write temp file
     #pid = str(os.getpid())
     name = os.popen('whoami').readlines()[0].strip()
@@ -182,8 +182,8 @@ def molecularMass(SmilesString,pid):
     return mass
 
 def heavyAtoms(SmilesString,pid):
-    TMPDIR = "scratch"
-    #TMPDIR = "tmp"
+    #TMPDIR = "scratch"
+    TMPDIR = "tmp"
     # this will get the users name. need to write temp file
     #pid = str(os.getpid())
     name = os.popen('whoami').readlines()[0].strip()

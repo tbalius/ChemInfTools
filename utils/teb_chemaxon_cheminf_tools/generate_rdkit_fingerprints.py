@@ -28,12 +28,18 @@ def make_fingerprint_file(smifilename,filename):
       #fp1 = AllChem.GetMorganFingerprint(m1,4)
       #fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,4)
       #fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,4,2048)
-      fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,4,1024)
+      #fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,4,1024)
+
+      # see: https://stackoverflow.com/questions/68359701/which-rdkit-fingerprint-corresponds-to-the-ecfp4-fingerprint
+      # according to https://www.rdkit.org/docs/GettingStartedInPython.html, a radius of 2 is roughly equivalent to ecfp4.
+      # attempting to mirror chemaxon ECFP4
+      fp1bv = AllChem.GetMorganFingerprintAsBitVect(m1,2,1024)
       N = len(fp1bv)
       fhw1.write("fingerprint = " )
       for i in range(N):
             fhw1.write('%d'%fp1bv[i]) 
-            if ((i+1)%8 == 0 and i!=N-1):
+            #if ((i+1)%8 == 0 and i!=N-1):
+            if ((i+1)%8 == 0):
                  fhw1.write('|') 
       fhw1.write('\n') 
   fhw1.close()
